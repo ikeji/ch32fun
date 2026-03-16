@@ -49,7 +49,7 @@ ifeq ($(DEBUG),1)
 	EXTRA_CFLAGS+=-DFUNCONF_DEBUG=1
 endif
 
-CFLAGS?=-g -Os -flto -ffunction-sections -fdata-sections -fmessage-length=0 -msmall-data-limit=8 -fno-tree-loop-distribute-patterns
+CFLAGS?=-ffunction-sections -fdata-sections -fmessage-length=0 -msmall-data-limit=8 -fno-tree-loop-distribute-patterns
 LDFLAGS+=-Wl,--print-memory-usage -Wl,-Map=$(TARGET).map
 
 # Get GCC major version in a shell-agnostic way
@@ -373,10 +373,7 @@ LDFLAGS+=-T $(LINKER_SCRIPT) -Wl,--gc-sections
 FILES_TO_COMPILE:=$(SYSTEM_C) $(TARGET).$(TARGET_EXT) $(ADDITIONAL_C_FILES) 
 
 $(TARGET).bin : $(TARGET).elf
-	$(PREFIX)-objdump -S $^ > $(TARGET).lst
 	$(PREFIX)-objcopy -R .storage  -O binary $< $(TARGET).bin
-	$(PREFIX)-objcopy -j .storage -O binary $< $(TARGET)_ext.bin
-	$(PREFIX)-objcopy -O ihex $< $(TARGET).hex
 
 ifeq ($(OS),Windows_NT)
 closechlink :
