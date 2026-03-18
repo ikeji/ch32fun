@@ -49,7 +49,7 @@ ifeq ($(DEBUG),1)
 	EXTRA_CFLAGS+=-DFUNCONF_DEBUG=1
 endif
 
-CFLAGS?=-ffunction-sections -fdata-sections -fmessage-length=0 -msmall-data-limit=8 -fno-tree-loop-distribute-patterns
+CFLAGS?=-g -Os -flto -ffunction-sections -fdata-sections -fmessage-length=0 -msmall-data-limit=8 -fno-tree-loop-distribute-patterns
 LDFLAGS+=-Wl,--print-memory-usage -Wl,-Map=$(TARGET).map
 
 # Get GCC major version in a shell-agnostic way
@@ -405,7 +405,7 @@ clangd_clean :
 	rm -f compile_commands.json
 	rm -rf .cache
 
-FLASH_COMMAND?=$(MINICHLINK)/minichlink -w $< $(WRITE_SECTION) -b
+FLASH_COMMAND?=$(MINICHLINK)/minichlink -c 0x1209b803 -w $< $(WRITE_SECTION) -b
 FLASH_EXT_COMMAND?=$(MINICHLINK)/minichlink -w $< $(EXT_ORIGIN) -b
 
 .PHONY : $(GENERATED_LD_FILE)

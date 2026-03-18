@@ -12,7 +12,16 @@ int main()
 	SystemInit();
 
 	funGpioInitAll(); // Enable GPIOs
-	
+
+  if (FLASH->STATR & (1<<14)) NVIC_SystemReset();
+  FLASH->KEYR = FLASH_KEY1;
+  FLASH->KEYR = FLASH_KEY2;
+  FLASH->BOOT_MODEKEYR = FLASH_KEY1;
+  FLASH->BOOT_MODEKEYR = FLASH_KEY2;
+  FLASH->STATR |= (1<<14);
+  FLASH->CTLR = CR_LOCK_Set;
+  funPinMode( PD4, GPIO_CFGLR_OUT_10Mhz_PP );
+
 	funPinMode( PIN_1,     GPIO_Speed_10MHz | GPIO_CNF_OUT_PP ); // Set PIN_1 to output
 	funPinMode( PIN_K,     GPIO_Speed_10MHz | GPIO_CNF_OUT_PP ); // Set PIN_K to output
 	funPinMode( PIN_BOB,   GPIO_Speed_10MHz | GPIO_CNF_OUT_PP ); // Set PIN_BOB to output

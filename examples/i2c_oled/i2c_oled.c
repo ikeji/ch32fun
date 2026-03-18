@@ -6,8 +6,8 @@
 // what type of OLED - uncomment just one
 // #define SSD1306_64X32
 // #define SSD1306_72X40
-#define SSD1306_128X32
-//#define SSD1306_128X64
+// #define SSD1306_128X32
+#define SSD1306_128X64
 
 #include "ch32fun.h"
 #include <stdio.h>
@@ -20,6 +20,17 @@ int main()
 {
 	// 48MHz internal clock
 	SystemInit();
+
+  funGpioInitAll(); // Enable GPIOs
+
+  if (FLASH->STATR & (1<<14)) NVIC_SystemReset();
+  FLASH->KEYR = FLASH_KEY1;
+  FLASH->KEYR = FLASH_KEY2;
+  FLASH->BOOT_MODEKEYR = FLASH_KEY1;
+  FLASH->BOOT_MODEKEYR = FLASH_KEY2;
+  FLASH->STATR |= (1<<14);
+  FLASH->CTLR = CR_LOCK_Set;
+  funPinMode( PD4, GPIO_CFGLR_OUT_10Mhz_PP );
 
 	Delay_Ms( 100 );
 	printf("\r\r\n\ni2c_oled example\n\r");
