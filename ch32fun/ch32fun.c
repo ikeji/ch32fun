@@ -1117,6 +1117,17 @@ void handle_reset( void ) __attribute__((section(".text.handle_reset")));
 
 #if defined( CH32V003 ) || defined( CH32X03x ) || defined(CH32V00x)
 
+void handle_reset_c(void) __attribute__((used));
+
+void handle_reset_c(void)
+{
+#if defined( FUNCONF_SYSTICK_USE_HCLK ) && FUNCONF_SYSTICK_USE_HCLK
+	SysTick->CTLR = 5;
+#else
+	SysTick->CTLR = 1;
+#endif
+}
+
 void handle_reset( void )
 {
 	asm volatile( "\n\
@@ -1177,11 +1188,12 @@ asm volatile(
 #endif
 );
 
-#if defined( FUNCONF_SYSTICK_USE_HCLK ) && FUNCONF_SYSTICK_USE_HCLK
-	SysTick->CTLR = 5;
-#else
-	SysTick->CTLR = 1;
-#endif
+__asm__ volatile(
+    "call handle_reset_c\n"
+    :
+    :
+    : "memory"
+);
 
 	// set mepc to be main as the root app.
 asm volatile(
@@ -1531,7 +1543,7 @@ __attribute__ ((naked)) void longjmp( jmp_buf env, int val )
 "	add a0, a0, a1\n"
 "	ret\n"
 	);
-	__builtin_unreachable(); // Disable warning about no return.
+	// __builtin_unreachable(); // Disable warning about no return.
 }
 
 #if defined( FUNCONF_USE_UARTPRINTF ) && FUNCONF_USE_UARTPRINTF

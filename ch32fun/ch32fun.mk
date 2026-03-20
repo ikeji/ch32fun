@@ -49,7 +49,7 @@ ifeq ($(DEBUG),1)
 	EXTRA_CFLAGS+=-DFUNCONF_DEBUG=1
 endif
 
-CFLAGS?=-g -Os -flto -ffunction-sections -fdata-sections -fmessage-length=0 -msmall-data-limit=8 -fno-tree-loop-distribute-patterns
+CFLAGS?=-g -Os -flto -ffunction-sections -fdata-sections -fmessage-length=0 -msmall-data-limit=8
 LDFLAGS+=-Wl,--print-memory-usage -Wl,-Map=$(TARGET).map
 
 # Get GCC major version in a shell-agnostic way
@@ -62,7 +62,7 @@ ifeq ($(findstring CH32V00,$(TARGET_MCU)),CH32V00) # CH32V002, 3, 4, 5, 6, 7
 	MCU_PACKAGE?=1
 	GENERATED_LD_FILE?=$(CH32FUN)/generated_ch32v003.ld
 	LINKER_SCRIPT?=$(GENERATED_LD_FILE)
-	LDFLAGS+=-L$(CH32FUN)/../misc -lgcc
+	LDFLAGS+=-L$(CH32FUN)/../misc
 	# Note: The CH32V003 is different from the other 00x variants and needs a different ARCH
 	ifeq ($(TARGET_MCU),CH32V003)
 		CFLAGS_ARCH+=-march=rv32ec -mabi=ilp32e
@@ -362,7 +362,7 @@ GENERATED_LD_FILE:=$(CH32FUN)/generated_$(TARGET_MCU_PACKAGE)_$(TARGET_MCU_MEMOR
 LINKER_SCRIPT?=$(GENERATED_LD_FILE)
 
 CFLAGS+= \
-	$(CFLAGS_ARCH) -static-libgcc \
+	$(CFLAGS_ARCH) \
 	-I$(NEWLIB) \
 	-I$(CH32FUN)/../extralibs \
 	-I$(CH32FUN) \
@@ -416,7 +416,8 @@ $(GENERATED_LD_FILE) :
 	$(PREFIX)-gcc -E -P -x c -DTARGET_MCU=$(TARGET_MCU) -DMCU_PACKAGE=$(MCU_PACKAGE) -DTARGET_MCU_LD=$(TARGET_MCU_LD) -DTARGET_MCU_MEMORY_SPLIT=$(TARGET_MCU_MEMORY_SPLIT) $(CH32FUN)/ch32fun.ld > $(GENERATED_LD_FILE)
 
 $(TARGET).elf : $(FILES_TO_COMPILE) $(LINKER_SCRIPT) $(EXTRA_ELF_DEPENDENCIES)
-	$(PREFIX)-gcc -o $@ $(FILES_TO_COMPILE) $(CFLAGS) $(LDFLAGS)
+	# $(PREFIX)-gcc -o $@ $(FILES_TO_COMPILE) $(CFLAGS) $(LDFLAGS)
+	clang -target riscv32-unknown-elf -o $@ $(FILES_TO_COMPILE) $(CFLAGS) $(LDFLAGS)
 
 # Rule for independently building ch32fun.o indirectly, instead of recompiling it from source every time.
 # Not used in the default 003fun toolchain, but used in more sophisticated toolchains.

@@ -1025,10 +1025,10 @@ void funAnalogInit( void );
 int funAnalogRead( int nAnalogNumber );
 
 void handle_reset()            __attribute__((naked)) __attribute((section(".text.handle_reset"))) __attribute__((used));
-void DefaultIRQHandler( void ) __attribute__((section(VECTOR_HANDLER_SECTION))) __attribute__((naked)) __attribute__((used));
+void DefaultIRQHandler( void ) __attribute__((section(VECTOR_HANDLER_SECTION))) __attribute__((used));
 // used to clear the CSS flag in case of clock fail switch
 #if defined(FUNCONF_USE_CLK_SEC) && FUNCONF_USE_CLK_SEC
-	void NMI_RCC_CSS_IRQHandler( void ) __attribute__((section(VECTOR_HANDLER_SECTION))) __attribute__((naked)) __attribute__((used));
+	void NMI_RCC_CSS_IRQHandler( void ) __attribute__((section(VECTOR_HANDLER_SECTION))) __attribute__((used));
 #endif
 
 void DelaySysTick( uint32_t n );
